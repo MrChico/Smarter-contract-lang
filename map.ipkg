@@ -1,0 +1,3 @@
+package Map
+
+modules = Data.Map.Base
