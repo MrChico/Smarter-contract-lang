@@ -1,7 +1,7 @@
 module Data.Map.Base
 
 
-%access public
+public export
 
 data Map : (k:Type) -> (a:Type) -> Type where
   Bin : Nat -> k -> a -> Map k a -> Map k a -> Map k a
