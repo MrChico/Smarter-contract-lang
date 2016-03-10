@@ -392,7 +392,8 @@ merge l@(Bin sizeL kx x lx rx) r@(Bin sizeR ky y ly ry) =
        else glue l r
 
 
-mergeWithKey : {k:Type} -> Ord k => (k -> a -> b -> Maybe c)
+mergeWithKey : {k:Type}
+            -> Ord k => (k -> a -> b -> Maybe c)
                      -> (Map k a -> Map k c)
                      -> (Map k b -> Map k c)
                      -> Map k a -> Map k b -> Map k c
@@ -418,4 +419,49 @@ mergeWithKey f g1 g2 = go
     go Tip t2 = g2 t2
     go t1 Tip = g1 t1
     go t1 t2 = hedgeMerge Nothing Nothing t1 t2
+
+
+unionWithKey : {k : Type}
+            -> Ord k => (k -> a -> a -> a)
+                     -> Map k a -> Map k a -> Map k a
+unionWithKey f = mergeWithKey f' id id
+  where f' k x y = Just (f k x y)
+
+unionWith : {k : Type}
+         -> Ord k => (a -> a -> a)
+                  -> Map k a -> Map k a -> Map k a
+unionWith f = unionWithKey (const f)
+
+union : {k : Type}
+     -> Ord k =>  Map k a -> Map k a -> Map k a
+union = unionWith (const id)
+
+intersectionWithKey : {k : Type}
+                   -> Ord k => (k -> a -> a -> a)
+                            -> Map k a -> Map k a -> Map k a
+intersectionWithKey f = mergeWithKey f' (const Tip) (const Tip)
+  where f' k x y = Just (f k x y)
+
+intersectionWith : {k : Type}
+                -> Ord k => (a -> a -> a)
+                -> Map k a -> Map k a -> Map k a
+intersectionWith f = intersectionWithKey (const f)
+
+intersection : {k : Type}
+            -> Ord k => Map k a -> Map k a -> Map k a
+intersection = intersectionWith (const id)
+
+differenceWithKey : {k : Type}
+                 -> Ord k => (k -> a -> b -> Maybe a)
+                          -> Map k a -> Map k b -> Map k a
+differenceWithKey f = mergeWithKey f id (const Tip)
+
+differenceWith : {k : Type}
+              -> Ord k => (a -> b -> Maybe a)
+              -> Map k a -> Map k b -> Map k a
+differenceWith f = differenceWithKey (const f)
+
+difference : {k : Type}
+          -> Ord k => Map k a -> Map k b -> Map k a
+difference = differenceWith (const $ const Nothing)
 
