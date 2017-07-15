@@ -5,15 +5,14 @@ import Control.Monad.State
 --The state is kept in a simple key-value mapping
 balances = Map.singleton "0x1" 100
 
-zeroAsDefault :: Maybe Int -> Int ; zeroAsDefault mx = case mx of {Nothing -> 0; Just x -> x}
+zeroAsDefault :: Maybe Int -> Int
+zeroAsDefault Nothing  = 0
+zeroAsDefault (Just x) = x
 
 transfer :: String -> String -> Int -> State (Map.Map String Int) ()
 transfer from to n = do
-  bal <- get
-  let fromBal = zeroAsDefault $ Map.lookup from bal
-  if fromBal < n
-    then do put bal
-    else do
+  fromBal <- gets (zeroAsDefault . Map.lookup from)
+  unless (fromBal < n) $ do
     modify $ Map.insert from (fromBal - n)
     modify $ Map.insertWith (+) to n
 
