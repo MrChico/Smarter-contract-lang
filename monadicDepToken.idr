@@ -8,7 +8,7 @@ zeroAsDefault : Maybe Nat -> Nat
 zeroAsDefault (Just n) = n
 zeroAsDefault Nothing = 0
 
-{-With dependent types, we can guard our transfer functionality by requiring a proof that the senders balance is sufficient. Our goal is to prove that applications of transfer renders the total supply unchanged.
+{-With dependent types, our goal is to prove that applications of transfer renders the total supply unchanged.
 
 Idris allows for stateful reasoning via the type STrans (or its syntactically cleaner variant ST). See State Machines all the way down by Edwin Brady for details
 
@@ -21,25 +21,21 @@ Approach 1:
 interface Token (m : Type -> Type) where
   initialize : String -> Nat -> ST m Var [Add (\bal => [bal ::: State (Map String Nat)])]
   --sufficientFunds : (bal : Var) -> (n : Nat) -> (from : String) -> (to : String) -> ST m Bool [bal ::: State (Map String Nat)]
-  transfer : (bal : Var) -> (from : String) -> (to : String) -> (n : Nat) -> ST m Bool [bal ::: State (Map String Nat)]
+  transfer : (bal : Var) -> (from : String) -> (to : String) ->  ST m (Map String Nat) [bal ::: State (Map String Nat)]
 
 implementation Token m where
   initialize owner amount = do bal <- new (singleton owner amount)
                                pure bal
-                               
-  transfer bal from to amount = do bal <- read bal
-                                   if (lte amount (zeroAsDefault $ lookup from bal))
-                                     then returning True 
-                                       modify $ insert from ((lookup from bal) - amount)
-                                       modify $ insertWith (+) to amount
-                                     else pure False
-                                   
+  transfer bal from to = do state <- read bal
+                            let fromBal = zeroAsDefault $ lookup from state
+                            case fromBal of
+                                 Z => pure state
+                                 S n => do
+                                        update bal $ Map.insert from n
+                                        update bal $ Map.insertWith (+) to 1
+                                        read bal
 {-
-Approach 2:
-- Model balances as Map String Nat, the fundamental resource on which our monad will be operating.
-- Create an interface, Token, listing the possible actions on the balances resource.
-- Create a function guardedTransfer, requiring not only balances as a resource, but also a proof that sufficient balance exists
-- Functionality for creating 
+Approach 2: TBD
 -}
 
 
