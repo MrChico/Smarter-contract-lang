@@ -17,6 +17,8 @@ Approach 1:
 - Transfer as a monadic function depending on whether there is sufficient balance or not
 -}
 
+--n-foldApp :
+
 
 interface Token (m : Type -> Type) where
   initialize : String -> Nat -> ST m Var [Add (\bal => [bal ::: State (Map String Nat)])]
@@ -34,8 +36,13 @@ implementation Token m where
                                         update bal $ Map.insert from n
                                         update bal $ Map.insertWith (+) to 1
                                         read bal
+
+
 {-
-Approach 2: TBD
+Approach 2: The invariance must be captured on the type level. Anything that satisfies the Token interface must have the sum of balances be invariant..
+Maybe model individual balances as labels [(martinBalance ::: Fin n :: jackBalance ::: Fin m)] and so on. Transfer function would then transform the resources by something along the lines of:
+[(martinBalance ::: Fin (S n) :: jackBalance ::: Fin m) => (martinBalance ::: Fin n :: jackBalance ::: Fin (S m))] 
+
 -}
 
 
@@ -65,7 +72,7 @@ moveQualityConstantSupply : (to : String) -> (from : String) -> (n : Nat) -> (x 
 --But how does one reason about the state? 
 
 
---Interface a la 'State machines all the way down'
+
 {-
 interface Token (m : Type -> Type) where
 
