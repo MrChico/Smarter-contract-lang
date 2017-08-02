@@ -2,6 +2,12 @@ import Control.ST
 import Data.Map.Base as Map
 
 --Monadic token utilizing dependent types
+interface Kv-store (s : Type -> Type -> Type) where
+  key : Type
+  elem : Type
+  getElem : s -> 
+
+
 
 --As before
 zeroAsDefault : Maybe Nat -> Nat
@@ -55,19 +61,22 @@ Address : Type
 Address = String
 
 -- We "need" this to be able to sum all balances. (Weird that it isn't in the Map library.)
+
+
+
 implementation Foldable (Map a) where
   foldr = ?what
   foldl = ?wath
 
-interface Token (t : Type -> Type -> Type) (a : Type) (b : Type) where
+totalSupply : Map a Nat => (a -> Nat) -> a -> Nat
+--totalSupply f struc = ?wha
+{-
+interface constToken (t : Address -> Nat -> Type) where
   -- Get the balance of an address.
-  balance      : a -> t a b -> b
-
-  -- Get the total supply.
-  totalSupply  : t a b -> b
+  balance      : Address -> t Address Nat -> Nat
 
   -- Move `amount` tokens from `from` to `to`.
-  transfer     : (from : a) -> (to : a) -> (amount : b) -> t a b -> t a b
+  transfer     : Address -> Address -> Nat -> t a b -> t a b
 
   -- Total supply should be constant.
   constSupply  : totalSupply tokens = totalSupply (transfer from to amount tokens)
@@ -75,8 +84,8 @@ interface Token (t : Type -> Type -> Type) (a : Type) (b : Type) where
   -- Balances should be updated after transfer.
   transferTo   : balance to tokens + amount = balance to (transfer from to amount tokens)
   transferFrom : balance from tokens = balance from (transfer from to amount tokens) + amount
-
-
+-}
+{-
 implementation Token Map Address Nat where
   balance a b = fromMaybe 0 $ lookup a b
   totalSupply = sum
@@ -85,7 +94,7 @@ implementation Token Map Address Nat where
   transferTo = ?hwat
   transferFrom = ?hawt
 
-
+-}
 
 --Lemma that for all natural numbers m, n and k with k <= m,
 --m + n = m - k + n + k
