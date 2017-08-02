@@ -45,6 +45,47 @@ Maybe model individual balances as labels [(martinBalance ::: Fin n :: jackBalan
 
 -}
 
+{-
+Approach 3: The token interface is stateless and requires proofs of invariants, but is used to implement a stateful library.
+-}
+
+
+-- Just to make things clearer.
+Address : Type
+Address = String
+
+-- We "need" this to be able to sum all balances. (Weird that it isn't in the Map library.)
+implementation Foldable (Map a) where
+  foldr = ?what
+  foldl = ?wath
+
+interface Token (t : Type -> Type -> Type) (a : Type) (b : Type) where
+  -- Get the balance of an address.
+  balance      : a -> t a b -> b
+
+  -- Get the total supply.
+  totalSupply  : t a b -> b
+
+  -- Move `amount` tokens from `from` to `to`.
+  transfer     : (from : a) -> (to : a) -> (amount : b) -> t a b -> t a b
+
+  -- Total supply should be constant.
+  constSupply  : totalSupply tokens = totalSupply (transfer from to amount tokens)
+
+  -- Balances should be updated after transfer.
+  transferTo   : balance to tokens + amount = balance to (transfer from to amount tokens)
+  transferFrom : balance from tokens = balance from (transfer from to amount tokens) + amount
+
+
+implementation Token Map Address Nat where
+  balance a b = fromMaybe 0 $ lookup a b
+  totalSupply = sum
+  transfer = ?waht
+  constSupply = ?whta
+  transferTo = ?hwat
+  transferFrom = ?hawt
+
+
 
 --Lemma that for all natural numbers m, n and k with k <= m,
 --m + n = m - k + n + k
