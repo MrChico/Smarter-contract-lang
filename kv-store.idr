@@ -2,9 +2,18 @@ module KVStore
 
 %access public export
 
-interface KVstore (k : Type) -> Type where
-  singleton : k -> v -> KVstore k v
-  insert : k -> v -> KVstore k v -> KVstore k v
+--interface (Eq k,Functor m) => AssocX m k where
+
+
+--Should keys be Ord?
+interface kvstore where
+  get : ?wha
+  insert : ?wha
+
+--interface (Ord k, Functor f) => KVstore f k where
+--  get : (Ord k, Functor v) => kv k v -> k -> v
+--  singleton : k -> v ->  (kv k v)
+--  insert : k -> v -> kv k v -> kv k v
   
 {-  
 data Map : (k:Type) -> (a:Type) -> Type where

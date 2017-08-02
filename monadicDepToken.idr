@@ -2,10 +2,8 @@ import Control.ST
 import Data.Map.Base as Map
 
 --Monadic token utilizing dependent types
-interface Kv-store (s : Type -> Type -> Type) where
-  key : Type
-  elem : Type
-  getElem : s -> 
+--A token should be a monad on the kv-store interface.
+--One would first want to translate the Edison API haskell library to idris
 
 
 
