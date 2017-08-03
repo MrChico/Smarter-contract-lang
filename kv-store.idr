@@ -8,6 +8,11 @@ interface KVStore (m : Type -> Type -> Type) k where
   empty  : m k v
   insert : k -> v -> m k v -> m k v
 
+public export
+Ord k => KVStore Map k where
+  get = Map.lookup
+  empty = Map.empty
+  insert = Map.insert
 --interface (Ord k, Functor f) => KVstore f k where
 --  get : (Ord k, Functor v) => kv k v -> k -> v
 --  singleton : k -> v ->  (kv k v)
