@@ -1,14 +1,12 @@
 module KVStore
 
-%access public export
+import Data.Map.Base as Map
 
---interface (Eq k,Functor m) => AssocX m k where
-
-
---Should keys be Ord?
-interface kvstore where
-  get : ?wha
-  insert : ?wha
+public export
+interface KVStore (m : Type -> Type -> Type) k where
+  get    : k -> m k v -> Maybe v
+  empty  : m k v
+  insert : k -> v -> m k v -> m k v
 
 --interface (Ord k, Functor f) => KVstore f k where
 --  get : (Ord k, Functor v) => kv k v -> k -> v
