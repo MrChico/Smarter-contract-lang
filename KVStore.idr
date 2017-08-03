@@ -3,13 +3,13 @@ module KVStore
 import Data.Map.Base as Map
 
 public export
-interface KVStore (m : Type -> Type -> Type) k where
+interface KVStore (m : Type -> Type -> Type) k v where
   get    : k -> m k v -> Maybe v
   empty  : m k v
   insert : k -> v -> m k v -> m k v
 
 public export
-Ord k => KVStore Map k where
+Ord k => KVStore Map k v where
   get = Map.lookup
   empty = Map.empty
   insert = Map.insert
@@ -26,7 +26,7 @@ construct : List (Pair k v) -> AssocList k v
 construct = MkAssocList
 
 public export
-Eq k => KVStore AssocList k where
+Eq k => KVStore AssocList k v where
   get a  = lookup a . destruct
   empty  = construct []
   insert k v al = construct $ (k,v) :: destruct al
