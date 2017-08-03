@@ -1,6 +1,22 @@
 import Control.ST
 import Data.Map.Base as Map
+--import KVStore as FiniteMap
 
+interface (Ord k, Functor m) => FiniteMap (m : Type -> Type) k where
+    get : k -> m a -> Maybe a
+    singleton : k -> a ->  (m a)
+    insert : k -> a -> (m a) -> (m a)
+    insertWith : (a -> a -> a) -> k -> a -> m a -> m a
+    
+implementation Functor (Map a) where
+  map f (Bin k x y z w) = (Bin k x (f y) (map f z) (map f w))
+  map f Tip = Tip
+
+implementation (Ord a) => FiniteMap (Map a) a where 
+  get = Map.lookup
+  singleton = Map.singleton
+  insert = Map.insert
+  insertWith = Map.insertWith
 --Monadic token utilizing dependent types
 --A token should be a monad on the kv-store interface.
 --One would first want to translate the Edison API haskell library to idris
@@ -66,7 +82,7 @@ implementation Foldable (Map a) where
   foldr = ?what
   foldl = ?wath
 
-totalSupply : Map a Nat => (a -> Nat) -> a -> Nat
+totalSupply : (FiniteMap m k) => () -> a -> Nat
 --totalSupply f struc = ?wha
 {-
 interface constToken (t : Address -> Nat -> Type) where
