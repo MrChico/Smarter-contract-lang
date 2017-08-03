@@ -77,9 +77,18 @@ Address = String
 
 
 
-implementation Foldable (Map a) where
-  foldr = ?what
-  foldl = ?wath
+Foldable (Map a) where
+  foldr _ acc Tip = acc
+  foldr f acc (Bin _ _ v leftTree rightTree) =
+    let rightRes = foldr f acc rightTree
+        midRes   = f v rightRes
+     in foldr f midRes leftTree
+
+  foldl _ acc Tip = acc
+  foldl f acc (Bin _ _ v leftTree rightTree) =
+    let leftRes = foldl f acc leftTree
+        midRes  = f leftRes v
+     in foldl f midRes rightTree
 
 totalSupply : (FiniteMap m k) => () -> a -> Nat
 --totalSupply f struc = ?wha
