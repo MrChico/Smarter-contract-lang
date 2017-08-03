@@ -13,6 +13,24 @@ Ord k => KVStore Map k where
   get = Map.lookup
   empty = Map.empty
   insert = Map.insert
+
+export
+data AssocList k v = MkAssocList (List (Pair k v))
+
+export
+destruct : AssocList k v -> List (Pair k v)
+destruct (MkAssocList l) = l
+
+export
+construct : List (Pair k v) -> AssocList k v
+construct = MkAssocList
+
+public export
+Eq k => KVStore AssocList k where
+  get a  = lookup a . destruct
+  empty  = construct []
+  insert k v al = construct $ (k,v) :: destruct al
+
 --interface (Ord k, Functor f) => KVstore f k where
 --  get : (Ord k, Functor v) => kv k v -> k -> v
 --  singleton : k -> v ->  (kv k v)
