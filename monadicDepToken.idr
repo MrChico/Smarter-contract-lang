@@ -25,8 +25,7 @@ implementation (Ord a) => FiniteMap (Map a) a where
 
 --As before
 zeroAsDefault : Maybe Nat -> Nat
-zeroAsDefault (Just n) = n
-zeroAsDefault Nothing = 0
+zeroAsDefault = fromMaybe 0
 
 {-With dependent types, our goal is to prove that applications of transfer renders the total supply unchanged.
 
