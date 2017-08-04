@@ -24,24 +24,24 @@ Foldable (Map a) where
         midRes  = f leftRes v
      in foldl f midRes rightTree
 
-interface (KVStore f a b, Num b, Foldable (f a)) => ConstToken (f : Type -> Type -> Type) a b where
+interface (Foldable (f Address), KVStore f Address Nat) => ConstToken (f : Type -> Type -> Type) Address Nat where
   -- Get the balance of an address.
-  balance : a -> f a b -> b
-  balance a = fromMaybe 0 . get a
+  balance : Address -> f Address Nat -> Nat
+  balance user = fromMaybe 0 . get user
 
-  totalSupply : f a b -> b
-  totalSupply = sum
+  totalSupply : Foldable (f Address) => f Address Nat -> Nat
+  totalSupply = ?what
 
   -- Move `amount` tokens from `from` to `to`.
-  transfer     : a -> a -> b -> f a b -> f a b
+  transfer     : Address -> Address -> Nat -> f Address Nat -> f Address Nat
 
 
   -- Total supply should be constant.
-  constSupply  : totalSupply tokens = totalSupply (transfer from to amount tokens)
+  constSupply : Foldable (f Address) => (tokens : f Address Nat) -> totalSupply tokens = totalSupply (transfer from to amount tokens)
 
   -- Balances should be updated after transfer.
-  transferTo   : balance to tokens + amount = balance to (transfer from to amount tokens)
-  transferFrom : balance from tokens = balance from (transfer from to amount tokens) + amount
+  --transferTo   : (plus (balance to tokens) amount) = (balance to (transfer from to amount tokens))
+  --transferFrom : balance from tokens = plus (balance from (transfer from to amount tokens)) amount
 
 
 
